@@ -1,9 +1,12 @@
 const fs = require('fs');
 const path = require('path');
+// 将js解析为抽象语法树
 const babylon = require('babylon');
 const babelTraverse = require('babel-traverse').default;
+// 将抽象语法树转化为js代码
 const generate = require('babel-generator').default;
 const t = require('babel-types');
+// 编译vue2模板
 const compiler = require('vue-template-compiler');
 
 const { initProps, initData, initComputed, initComponents } = require('./collect-state');
@@ -46,6 +49,7 @@ const collect = {
 
 function formatContent (source, isSFC) {
     if (isSFC) {
+        // 解析 .vue 文件内容，提取 <template>、<script> 和 <style> 部分
         const res = compiler.parseComponent(source, { pad: 'line' });
         return {
             template: res.template.content.replace(/{{/g, '{').replace(/}}/g, '}'),
@@ -60,15 +64,24 @@ function formatContent (source, isSFC) {
 }
 
 // AST for vue component
+/**
+ * 
+ * @param {*} src 需要转换的文件路径
+ * @param {*} targetPath 输出文件路径
+ * @param {*} isSFC 是否是单文件组件
+ */
 module.exports = function transform (src, targetPath, isSFC) {
+    // 同步读取文件
     const source = fs.readFileSync(src);
     const component = formatContent(source.toString(), isSFC);
 
+    // 将 <script> 中的代码解析为 AST
     const vast = babylon.parse(component.js, {
         sourceType: 'module',
         plugins: isSFC ? [] : ['jsx']
     });
 
+    // 从抽象语法树提取信息
     initProps(vast, state);
     initData(vast, state);
     initComputed(vast, state);
@@ -102,6 +115,7 @@ module.exports = function transform (src, targetPath, isSFC) {
     
     // AST for react component
     const tpl = `export default class ${parseName(state.name)} extends Component {}`;
+    // react 抽象语法树 后续继续构造
     const rast = babylon.parse(tpl, {
         sourceType: 'module'
     });

@@ -1,7 +1,13 @@
 const fs = require('fs');
 const path = require('path');
+// 格式化和修复代码
 const format = require('prettier-eslint');
 
+/**
+ * 将转化后的react代码格式化 然后写到输出路径文件中
+ * @param {*} code 
+ * @param {*} dist 
+ */
 function output (code, dist) {
     const opts = {
         text: code,

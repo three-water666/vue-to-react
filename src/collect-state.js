@@ -1,3 +1,4 @@
+// 遍历和操作抽象语法树的库
 const babelTraverse = require('babel-traverse').default;
 const t = require('babel-types');
 
@@ -8,6 +9,7 @@ const collectVueComputed = require('./vue-computed');
 /**  
  * Collect vue component state(data prop, props prop & computed prop)
  * Don't support watch prop of vue component
+ * 
  */
 exports.initProps = function initProps (ast, state) {
     babelTraverse(ast, {

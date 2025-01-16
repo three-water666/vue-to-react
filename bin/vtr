@@ -1,15 +1,19 @@
 #! /usr/bin/env node
 
+// commander 命令行交互库 
 const program = require('commander');
+// 终端日志加颜色
 const chalk = require('chalk');
 const path = require('path');
 const fs = require('fs');
+// inquirer 用户输入输出交互
 const inquirer = require('inquirer');
 
 const transform = require('../src/index');
 const { log } = require('../src/utils');
 const pkg = require('../package.json');
 
+// process 内置
 process.on('exit', () => console.log());
 
 program
@@ -42,9 +46,11 @@ let src = program.args[0];
 let dist = program.args[1] ? program.args[1] : process.cwd();
 let name = program.args[2] ? program.args[2] : 'react.js';
 
+// 转化为相对路径
 src = path.resolve(process.cwd(), src);
 dist = path.resolve(process.cwd(), dist);
 
+// 各种参数校验
 if (!/(\.js|\.vue)$/.test(src)) {
     log(`Not support the file format: ${src}`);
     process.exit();
@@ -69,9 +75,11 @@ if (!/\.js$/.test(name)) {
     name += '.js';
 }
 
+// 是否是单文件组件
 const isSFC = /\.vue$/.test(src);
 const targetPath = path.resolve(process.cwd(), path.join(dist, name));
 
+// 文件存在是否覆盖
 if (fs.existsSync(targetPath)) {
     inquirer.prompt([{
         type: 'confirm',
